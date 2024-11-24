@@ -41,6 +41,7 @@ public:
     int thoigianthue() const;
     long long tienthuephong() const;
     void displayRoomInfo() const;
+   
 };
 
 struct Node {
@@ -61,6 +62,7 @@ public:
     void displayRooms() const;
     bool updateRoom(const string& roomID, bool isAvailable);
     Phong* findRoom(const string& roomID);
+    void findAndDisplayRoom(const string& roomID);
     void readRoomsFile(const string& filename);
     void calculateRoom(const string& roomID);
     bool isRoomExit(const string& roomID) const;

@@ -358,28 +358,36 @@ void PhongMenu(LinkedlistPhong& listphong) {
             }
             case 4: {
                 cout << "Nhap ma phong can tim: ";
+                string roomID;
                 getline(cin, roomID);
-                Phong* room = listphong.findRoom(roomID);
-                if (room != NULL) {
-                    cout << "===================================================================================\n";
-                    room->displayRoomInfo();
-                    cout << "===================================================================================\n";
-                } else {
-                    cout << "Khong tim thay phong voi ma phong: " << roomID << endl;
-                }
+                listphong.findAndDisplayRoom(roomID);
                 break;
-            }
+            }   
             case 5: {
                 cout << "Nhap ma phong can xoa: ";
                 getline(cin, roomID);
                 Phong* room = listphong.findRoom(roomID);
                 if (room != nullptr) {
-                    char xacnhan;
+                    if (!room->getIsAvailable()) {
+                        cout << "\nPhong " << roomID << " hien dang co khach thue!\n";
+                        cout << "Khong the xoa phong dang co khach.\n";
+                        break;
+                    }
+
                     cout << "\nThong tin phong can xoa:\n";
-                    cout << "=============================================================================\n";
+                    cout << string(85, '=') << endl;
+                    cout << left 
+                        << setw(10) << "RoomID" << " | " 
+                        << setw(12) << "RoomType" << " | " 
+                        << setw(14) << "Status" << " | " 
+                        << setw(8) << "Floor" << " | " 
+                        << setw(10) << "Capacity" << " | " 
+                        << setw(15) << "Price(VND/hour)" << endl;
+                    cout << string(85, '=') << endl;
                     room->displayRoomInfo();
-                    cout << "=============================================================================\n";
+                    cout << string(85, '=') << endl;
                     
+                    char xacnhan;
                     do {
                         cout << "Ban co chac chan muon xoa phong nay? (y/n): ";
                         cin >> xacnhan;
@@ -391,8 +399,11 @@ void PhongMenu(LinkedlistPhong& listphong) {
                     } while (xacnhan != 'y' && xacnhan != 'n');
                     
                     if (xacnhan == 'y') {
-                        listphong.deleteRoom(roomID);
-                        cout << "\nDa xoa phong " << roomID << " thanh cong!\n";
+                        if (listphong.deleteRoom(roomID)) {
+                            cout << "\nDa xoa phong " << roomID << " thanh cong!\n";
+                        } else {
+                            cout << "Xoa phong that bai!\n";
+                        }
                     } else {
                         cout << "Da huy xoa phong!\n";
                     }

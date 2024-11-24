@@ -2,7 +2,8 @@
 #include "Khachhang.h"
 #include <iomanip>
 #include <limits>
-#include <algorithm>  // Cho hàm transform
+#include <algorithm> 
+#include <fstream>
 using std::numeric_limits;
 
 Phong::Phong(string id, string type, int floor, int capacity, bool available, int price)
@@ -66,11 +67,11 @@ void Phong::setRoomType(const string& type) {
     string newType = type;
     transform(newType.begin(), newType.end(), newType.begin(), ::tolower);
     
-    if (newType == "vip" || newType == "Vip" || newType == "VIP") {
+    if (newType == "vip") {
         roomType = "VIP";
-    } else if (newType == "standard" || newType == "Standard" || newType == "STANDARD") {
+    } else if (newType == "standard") {
         roomType = "Standard";
-    } else if (newType == "deluxe" || newType == "Deluxe" || newType == "DELUXE") {
+    } else if (newType == "deluxe") {
         roomType = "Deluxe";
     } else {
         roomType = type; 
@@ -272,9 +273,9 @@ bool LinkedlistPhong::editRoom(const string& roomID) {
     }
 
     cout << "Cap nhat thong tin phong co ma: " << roomID << endl;
-    cout << "Nhap loai phong moi (Hien tai: " << room->getRoomType() << "): ";
+    
     string newType;
-    cin.ignore();
+    cout << "Nhap loai phong moi (Hien tai: " << room->getRoomType() << "): ";
     getline(cin, newType);
 
     cout << "Nhap so tang moi (Hien tai: " << room->getRoomFloor() << "): ";
@@ -293,6 +294,7 @@ bool LinkedlistPhong::editRoom(const string& roomID) {
          << (room->getIsAvailable() ? "Trong" : "Da co khach") << "): ";
     bool newAvailability;
     cin >> newAvailability;
+
     room->setRoomType(newType);
     room->setRoomFloor(newFloor);
     room->setRoomCapacity(newCapacity);
@@ -464,27 +466,33 @@ void LinkedlistPhong::bookRoom(const string& roomID) {
         return;
     }
 
+    // Lưu thông tin khách hàng vào file lịch sử
+    ofstream historyFile("lichsukhachhang.txt", ios::app);
+    if (historyFile.is_open()) {
+        historyFile << roomID << ";" 
+                    << checkin.tm_mday << "/" << checkin.tm_mon + 1 << "/" << checkin.tm_year + 1900 
+                    << " " << checkin.tm_hour << ":00" << ";" 
+                    << tenKH << ";" << cccd << ";" << sdt << ";" << queQuan << endl;
+        historyFile.close();
+    } else {
+        cout << "Khong the ghi vao file lich su!\n";
+    }
+
+    // Lưu thông tin khách hàng vào file khách hàng hiện tại
+    ofstream currentFile("khachhanghientai.txt", ios::app);
+    if (currentFile.is_open()) {
+        currentFile << roomID << ";" 
+                    << checkin.tm_mday << "/" << checkin.tm_mon + 1 << "/" << checkin.tm_year + 1900 
+                    << " " << checkin.tm_hour << ":00" << ";" 
+                    << tenKH << ";" << cccd << ";" << sdt << ";" << queQuan << endl;
+        currentFile.close();
+    } else {
+        cout << "Khong the ghi vao file khach hang hien tai!\n";
+    }
+
     room->setIsAvailable(false);
     room->setCheckIn(checkin);
-
-    ifstream outfileCheck("Khachhang.txt");
-    if (outfileCheck.is_open()) {
-        outfileCheck.close();
-    }
-    ofstream outfile("Khachhang.txt", ios::app);
-    if (outfile.is_open()) {
-        outfile << roomID << ";" 
-               << checkin.tm_mday << "/" << checkin.tm_mon + 1 << "/" << checkin.tm_year + 1900 
-               << " " << checkin.tm_hour << ":00" << ";" 
-               << tenKH << ";" << cccd << ";" << sdt << ";" << queQuan << endl;
-        outfile.close();
-        cout << "\nDa ghi thong tin khach hang vao file thanh cong!\n";
-        cout << "Da dat phong thanh cong!\n";
-    } else {
-        room->setIsAvailable(true);
-        cout << "Khong the ghi file!\n";
-        cout << "Dat phong that bai!\n";
-    }
+    cout << "Da dat phong thanh cong!\n";
 }
 
 void LinkedlistPhong::checkOutRoom(const string& roomID) {
@@ -498,6 +506,7 @@ void LinkedlistPhong::checkOutRoom(const string& roomID) {
         return;
     }
 
+    // Hiển thị thông tin phòng trước
     cout << "\nThong tin phong:\n";
     cout << string(85, '=') << endl;
     cout << left 
@@ -511,7 +520,8 @@ void LinkedlistPhong::checkOutRoom(const string& roomID) {
     room->displayRoomInfo();
     cout << string(85, '=') << endl;
 
-    ifstream infile("Khachhang.txt");
+    // Tìm và hiển thị thông tin khách hàng
+    ifstream infile("khachhanghientai.txt");
     string line;
     string tenKH, cccd, sdt, queQuan, checkinStr;
     bool found = false;
@@ -533,11 +543,11 @@ void LinkedlistPhong::checkOutRoom(const string& roomID) {
     infile.close();
 
     if (!found) {
-        cout << "Khong tim thay khach hang nao dat phong " << roomID << endl;
+        cout << "Khong tim thay thong tin khach hang cho phong nay.\n";
         return;
     }
 
-    cout << "\nThong tin khach hang:\n";
+    cout << "\nThong tin khach hang hien tai:\n";
     cout << string(65, '=') << endl;
     cout << left << setw(15) << "Ho ten" << " | "
          << setw(15) << "CCCD" << " | "
@@ -551,43 +561,38 @@ void LinkedlistPhong::checkOutRoom(const string& roomID) {
     cout << string(65, '=') << endl;
     cout << "Thoi gian check-in: " << checkinStr << endl;
 
-    tm checkout = {};
+    // Sau khi hiển thị thông tin, lấy thông tin checkout
     int ngayRa, thangRa, namRa, gioRa;
     outputDateTime("check-out");
-    if (!DateTime(ngayRa, thangRa, namRa, gioRa)) {
+    if(!DateTime(ngayRa, thangRa, namRa, gioRa)) {
         cout << "Ngay thang nam khong hop le!\n";
         return;
     }
-    tm checkin = room->getCheckIn();
-    bool isValid = true;
-    
-    if (namRa < checkin.tm_year + 1900) {
-        isValid = false;
-    } else if (namRa == checkin.tm_year + 1900) {
-        if (thangRa < checkin.tm_mon + 1) {
-            isValid = false;
-        } else if (thangRa == checkin.tm_mon + 1) {
-            if (ngayRa < checkin.tm_mday) {
-                isValid = false;
-            } else if (ngayRa == checkin.tm_mday) {
-                if (gioRa <= checkin.tm_hour) {
-                    isValid = false;
-                }
-            }
-        }
-    }
 
-    if (!isValid) {
-        cout << "Thoi gian check-out phai sau thoi gian check-in!\n";
-        return;
-    }
-
-    checkout.tm_mday = ngayRa;
-    checkout.tm_mon = thangRa - 1;
+    tm checkout = {};
     checkout.tm_year = namRa - 1900;
+    checkout.tm_mon = thangRa - 1;
+    checkout.tm_mday = ngayRa;
     checkout.tm_hour = gioRa;
     room->setCheckOut(checkout);
 
+    // Xóa thông tin khách hàng khỏi file
+    ifstream infile2("khachhanghientai.txt");
+    ofstream tempFile("temp.txt");
+    while (getline(infile2, line)) {
+        stringstream ss(line);
+        string fileRoomID;
+        getline(ss, fileRoomID, ';');
+        if (fileRoomID != roomID) {
+            tempFile << line << endl;
+        }
+    }
+    infile2.close();
+    tempFile.close();
+    remove("khachhanghientai.txt");
+    rename("temp.txt", "khachhanghientai.txt");
+
+    // In hóa đơn
     cout << "\n=================== HOA DON THANH TOAN ===================\n";
     cout << "Ma hoa don: HD" << roomID << "_" << ngayRa << thangRa << namRa << endl;
     cout << "Ngay lap: " << ngayRa << "/" << thangRa << "/" << namRa << endl;
@@ -608,38 +613,120 @@ void LinkedlistPhong::checkOutRoom(const string& roomID) {
     cout << "Tong tien phong: " << room->tienthuephong() << " VND" << endl;
     cout << "=======================================================\n";
 
-    char choice;
-    do {
-        cout << "Xac nhan thanh toan va tra phong? (y/n): ";
-        cin >> choice;
-        choice = tolower(choice);
-        if (choice != 'y' && choice != 'n') {
-            cout << "Vui long chi nhap 'y' hoac 'n'!\n";
-        }
-    } while (choice != 'y' && choice != 'n');
-
-    if (choice == 'n') {
-        cout << "Da huy tra phong!\n";
-        return;
+    // Ghi hóa đơn vào file
+    ofstream hoadonFile("hoadon.txt", ios::app);
+    if (hoadonFile.is_open()) {
+        hoadonFile << "===================HOA DON THANH TOAN===================\n";
+        hoadonFile << "Ma hoa don: HD" << roomID << "_" << ngayRa << thangRa << namRa << endl;
+        hoadonFile << "Ngay lap: " << ngayRa << "/" << thangRa << "/" << namRa << endl;
+        hoadonFile << "\nTHONG TIN KHACH HANG:\n";
+        hoadonFile << "Ho va ten: " << tenKH << endl;
+        hoadonFile << "CCCD: " << cccd << endl;
+        hoadonFile << "So dien thoai: " << sdt << endl;
+        hoadonFile << "Que quan: " << queQuan << endl;
+        hoadonFile << "\nTHONG TIN PHONG:\n";
+        hoadonFile << "Ma phong: " << roomID << endl;
+        hoadonFile << "Loai phong: " << room->getRoomType() << endl;
+        hoadonFile << "Gia phong/gio: " << room->getRoomPrice() << " VND" << endl;
+        hoadonFile << "Thoi gian check-in: " << checkinStr << endl;
+        hoadonFile << "Thoi gian check-out: " << ngayRa << "/" << thangRa << "/" << namRa 
+                   << " " << gioRa << ":00" << endl;
+        hoadonFile << "Thoi gian thue: " << room->thoigianthue() << " gio" << endl;
+        hoadonFile << "\nTHANH TOAN:\n";
+        hoadonFile << "Tong tien phong: " << room->tienthuephong() << " VND" << endl;
+        hoadonFile << "=======================================================\n\n";
+        hoadonFile.close();
+        cout << "Da luu hoa don vao file hoadon.txt\n";
+    } else {
+        cout << "Khong the ghi hoa don vao file!\n";
     }
 
     room->setIsAvailable(true);
     cout << "\nTra phong thanh cong!\n";
+}
 
-    ofstream outFile("hoadon.txt", ios::app);
-    if (outFile.is_open()) {
-        outFile << "HD" << roomID << "_" << ngayRa << thangRa << namRa << ";"
-               << ngayRa << "/" << thangRa << "/" << namRa << ";"
-               << tenKH << ";"
-               << cccd << ";"
-               << roomID << ";"
-               << checkinStr << ";"
-               << ngayRa << "/" << thangRa << "/" << namRa << " " << gioRa << ":00" << ";"
-               << room->thoigianthue() << ";"
-               << room->tienthuephong() << endl;
-        outFile.close();
+void initializeFiles() {
+    std::ofstream historyFile("lichsukhachhang.txt", std::ios::app);
+    if (!historyFile) {
+        std::cerr << "Khong the tao file lichsukhachhang.txt\n";
+    }
+    historyFile.close();
+
+    std::ofstream currentFile("khachhanghientai.txt", std::ios::app);
+    if (!currentFile) {
+        std::cerr << "Khong the tao file khachhanghientai.txt\n";
+    }
+    currentFile.close();
+
+    std::ofstream hoadonFile("hoadon.txt", std::ios::app);
+    if (!hoadonFile) {
+        std::cerr << "Khong the tao file hoadon.txt\n";
+    }
+    hoadonFile.close();
+}
+
+void LinkedlistPhong::findAndDisplayRoom(const string& roomID) {
+    Phong* room = findRoom(roomID);
+    if (room == NULL) {
+        cout << "Khong tim thay phong voi ma so: " << roomID << endl;
+        return;
+    }
+
+    cout << "\n=== THONG TIN PHONG " << roomID << " ===\n";
+    cout << string(85, '=') << endl;
+    cout << left 
+        << setw(10) << "RoomID" << " | " 
+        << setw(12) << "RoomType" << " | " 
+        << setw(14) << "Status" << " | " 
+        << setw(8) << "Floor" << " | " 
+        << setw(10) << "Capacity" << " | " 
+        << setw(15) << "Price(VND/hour)" << endl;
+    cout << string(85, '=') << endl;
+    room->displayRoomInfo();
+    cout << string(85, '=') << endl;
+
+    if (!room->getIsAvailable()) {
+        cout << "\nPhong dang co khach thue. Thong tin khach hang:\n";
+        ifstream infile("khachhanghientai.txt");
+        string line;
+        string tenKH, cccd, sdt, queQuan, checkinStr;
+        bool found = false;
+
+        while (getline(infile, line)) {
+            stringstream ss(line);
+            string fileRoomID;
+            getline(ss, fileRoomID, ';');
+            if (fileRoomID == roomID) {
+                getline(ss, checkinStr, ';');
+                getline(ss, tenKH, ';');
+                getline(ss, cccd, ';');
+                getline(ss, sdt, ';');
+                getline(ss, queQuan);
+                found = true;
+                break;
+            }
+        }
+        infile.close();
+
+        if (found) {
+            cout << string(65, '=') << endl;
+            cout << left << setw(25) << "Ho ten" << " | "
+                 << setw(18) << "CCCD" << " | "
+                 << setw(15) << "SDT" << " | "
+                 << setw(15) << "Que quan" << endl;
+            cout << string(65, '=') << endl;
+            cout << left << setw(25) << tenKH << " | "
+                 << setw(18) << cccd << " | "
+                 << setw(15) << sdt << " | "
+                 << setw(15) << queQuan << endl;
+            cout << string(65, '=') << endl;
+            cout << "Thoi gian check-in: " << checkinStr << endl;
+        } else {
+            cout << "Khong tim thay thong tin khach hang cho phong nay.\n";
+        }
     } else {
-        cout << "Khong the luu thong tin hoa don!\n";
+        cout << "\nPhong hien dang trong va san sang cho thue.\n";
     }
 }
+
 
