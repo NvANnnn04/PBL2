@@ -1,0 +1,66 @@
+===================HOA DON THANH TOAN===================
+Ma hoa don: HD102_26112024
+Ngay lap: 26/11/2024
+
+THONG TIN KHACH HANG:
+Ho va ten: Nguyen Van An
+CCCD: 046205008821
+So dien thoai: 0978684765
+Que quan: Quang Tri
+
+THONG TIN PHONG:
+Ma phong: 102
+Loai phong: Standard
+Gia phong/gio: 100000 VND
+Thoi gian check-in: 25/11/2024 21:00
+Thoi gian check-out: 26/11/2024 7:00
+Thoi gian thue: 10 gio
+
+THANH TOAN:
+Tong tien phong: 1000000 VND
+=======================================================
+
+===================HOA DON THANH TOAN===================
+Ma hoa don: HD103_30112025
+Ngay lap: 30/11/2025
+
+THONG TIN KHACH HANG:
+Ho va ten: Nguyen Phuoc Vinh
+CCCD: 046205008822
+So dien thoai: 0978687563
+Que quan: Quang Binh
+
+THONG TIN PHONG:
+Ma phong: 103
+Loai phong: Standard
+Gia phong/gio: 100000 VND
+Thoi gian check-in: 27/11/2025 2:00
+Thoi gian check-out: 30/11/2025 3:00
+Thoi gian thue: 73 gio
+
+THANH TOAN:
+Tong tien phong: 7300000 VND
+=======================================================
+
+===================HOA DON THANH TOAN===================
+Ma hoa don: HD104_2122024
+Ngay lap: 2/12/2024
+
+THONG TIN KHACH HANG:
+Ho va ten: Ha Duy Anh
+CCCD: 046205008825
+So dien thoai: 095874959
+Que quan: Quang Ngai
+
+THONG TIN PHONG:
+Ma phong: 104
+Loai phong: VIP
+Gia phong/gio: 200000 VND
+Thoi gian check-in: 1/12/2024 14:00
+Thoi gian check-out: 2/12/2024 8:00
+Thoi gian thue: 18 gio
+
+THANH TOAN:
+Tong tien phong: 3600000 VND
+=======================================================
+

@@ -1,0 +1,27 @@
+
+Tong so khach hang trong thang 11/2024: 1
+104;1/12/2024 14:00;Ha Duy Anh;046205008825;095874959;Quang Ngai
+102;2/12/2024 12:00;Hoang Nguyen;046205008827;097867568;Ha Noi;
+
+
+Tong so khach hang trong thang 12/2024: 2
+
+
+Tong so khach hang trong thang 1/2025: 0
+
+
+Tong so khach hang trong thang 2/2024: 0
+103;27/11/2025 2:00;Nguyen Phuoc Vinh;046205008822;0978687563;Quang Binh
+
+
+Tong so khach hang trong thang 11/2025: 1
+102;25/11/2024 21:00;Nguyen Van An;046205008821;0978684765;Quang Tri
+
+
+Tong so khach hang trong thang 11/2024: 1
+104;1/12/2024 14:00;Ha Duy Anh;046205008825;095874959;Quang Ngai
+102;2/12/2024 12:00;Hoang Nguyen;046205008827;097867568;Ha Noi;
+
+Tong so khach hang trong thang 12/2024: 2
+
+Tong so khach hang trong thang 1/2024: 0
