@@ -446,9 +446,9 @@ void LinkedlistPhong::bookRoom(const string& roomID) {
     cout << "Loai phong: " << room->getRoomType() << endl;
     cout << "Gia phong/gio: " << room->getRoomPrice() << " VND" << endl;
     cout << "\nThong tin khach hang:\n";
-    cout << string(65, '=') << endl;
+    cout << string(80, '=') << endl;
     kh.displayInfoKH();
-    cout << string(65, '=') << endl;
+    cout << string(80, '=') << endl;
     cout << "Thoi gian check-in: " << ngayVao << "/" << thangVao << "/" << namVao 
          << " " << gioVao << ":00\n" << endl;
     cout << string(85, '=') << endl;
@@ -709,17 +709,17 @@ void LinkedlistPhong::findAndDisplayRoom(const string& roomID) {
         infile.close();
 
         if (found) {
-            cout << string(65, '=') << endl;
+            cout << string(85, '=') << endl;
             cout << left << setw(25) << "Ho ten" << " | "
                  << setw(18) << "CCCD" << " | "
                  << setw(15) << "SDT" << " | "
                  << setw(15) << "Que quan" << endl;
-            cout << string(65, '=') << endl;
+            cout << string(85, '=') << endl;
             cout << left << setw(25) << tenKH << " | "
                  << setw(18) << cccd << " | "
                  << setw(15) << sdt << " | "
                  << setw(15) << queQuan << endl;
-            cout << string(65, '=') << endl;
+            cout << string(85, '=') << endl;
             cout << "Thoi gian check-in: " << checkinStr << endl;
         } else {
             cout << "Khong tim thay thong tin khach hang cho phong nay.\n";

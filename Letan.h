@@ -41,5 +41,8 @@ public:
 	NodeLT* findLetan(const string& id);
 	void deteleLetan(const string& id);
 	bool userLogin(const LinkedListLetan& listletan);
+	void findLetanByName(const string& name);
+	void findLetanByWorkday(const string& workday);
+	bool updateWorkday(const string& id, const string& newWorkday);
 };
 #endif

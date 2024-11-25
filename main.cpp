@@ -1,6 +1,7 @@
 #include <iostream>
 #include <conio.h>
 #include <string>
+#include <limits>
 #include "Phong.h"
 #include "Person.h"
 #include "Letan.h"
@@ -11,6 +12,7 @@ using namespace std;
 string adminPassword;
 LinkedListLetan listletan;
 LinkedlistPhong listphong;
+LinkedListKhachhang listkhachhang;
 void createAdminpassword();
 void PhongMenu(LinkedlistPhong& listphong);
 void LetanMenu(LinkedListLetan& listletan);
@@ -141,15 +143,17 @@ bool LinkedListLetan::userLogin(const LinkedListLetan& listletan) {
     return false;
 } 
 
+
 void adminMenu() {
 	int choice;
 	do {
-	cout << "\n========== MENU ADMIN ==========\n";
-	cout << "1. Quan ly phong\n";
-	cout << "2. Quan ly le tan\n";
-	cout << "3. Quan ly thong tin khach hang\n";
-	cout << "0. Dang xuat\n";
-	cout << "Hay nhap lua chon: ";
+	
+		cout << "\n========== MENU ADMIN ==========\n";
+		cout << "1. Quan ly phong\n";
+		cout << "2. Quan ly le tan\n";
+		cout << "3. Quan ly thong tin khach hang\n";
+		cout << "0. Dang xuat\n";
+		cout << "Hay nhap lua chon: ";
  	cin >> choice;
     cin.ignore();
         switch (choice) {
@@ -176,6 +180,7 @@ void adminMenu() {
 void userMenu(LinkedListLetan& listletan) {
     int choice;
     do {
+
         cout << "\n========== MENU USER ==========\n";
         cout << "1. Quan ly phong\n";
         cout << "2. Quan ly khach hang\n";
@@ -185,137 +190,17 @@ void userMenu(LinkedListLetan& listletan) {
         cin.ignore();
 
         switch (choice) {
-            case 1: {
-                int phongChoice;
-                char tieptuc;
-                do {
-                    cout << "\n========== QUAN LY PHONG ==========\n";
-                    cout << "1. Hien thi danh sach phong\n";
-                    cout << "2. Cap nhat trang thai phong\n";
-                    cout << "3. Tim phong\n";
-                    cout << "4. Tinh gia tien phong\n";
-                    cout << "0. Quay lai\n";
-                    cout << "Nhap lua chon: ";
-                    cin >> phongChoice;
-                    cin.ignore();
-
-                    switch (phongChoice) {
-                        case 1: {
-                            listphong.displayRooms();
-                            break;
-                        }
-                        case 2: {
-                            string roomID;
-                            int trangthai;
-                            bool newtrangthai;
-                            
-                            cout << "Nhap ma phong can cap nhat trang thai: ";
-                            cin >> roomID;
-                            while (true) {
-                                cout << "Nhap trang thai moi cua phong (1 - Trong, 0 - Da co khach): ";
-                                cin >> trangthai;
-                                if (trangthai == 0 || trangthai == 1) {
-                                    newtrangthai = (trangthai == 1);
-                                    break;
-                                } else {
-                                    cout << "Gia tri khong hop le, vui long thu lai.\n";
-                                }
-                            }
-                            if (listphong.updateRoom(roomID, newtrangthai)) {
-                                cout << "Trang thai phong da cap nhat thanh cong.\n";
-                            } else {
-                                cout << "Cap nhat trang thai phong that bai!\n";
-                            }
-                            break;
-                        }
-                        case 3: {
-                            string roomID;
-                            cout << "Nhap ma phong can tim: ";
-                            cin >> roomID;
-                            Phong* room = listphong.findRoom(roomID);
-                            if (room != NULL) {
-                                cout << "=============================================================================\n";
-                                room->displayRoomInfo();
-                                cout << "=============================================================================\n";
-                            } else {
-                                cout << "Khong tim thay phong!\n";
-                            }
-                            break;
-                        }
-                        case 4: {
-                            string roomID;
-                            cout << "Nhap ma phong can tinh tien: ";
-                            cin >> roomID;
-                            Phong* room = listphong.findRoom(roomID);
-                            if (room != nullptr) {
-                                if (room->getIsAvailable()) {
-                                    cout << "Phong nay hien dang trong, khong the tinh tien!\n";
-                                    break;
-                                }
-                                
-                                tm checkin = {}, checkout = {};
-                                int ngayVao, thangVao, namVao, gioVao;
-                                int ngayRa, thangRa, namRa, gioRa;
-                                
-                                cout << "Nhap thoi gian check-in (ngay thang nam gio): ";
-                                cin >> ngayVao >> thangVao >> namVao >> gioVao;
-                                cout << "Nhap thoi gian check-out (ngay thang nam gio): ";
-                                cin >> ngayRa >> thangRa >> namRa >> gioRa;
-                                
-                                checkin.tm_mday = ngayVao;
-                                checkin.tm_mon = thangVao - 1;
-                                checkin.tm_year = namVao - 1900;
-                                checkin.tm_hour = gioVao;
-                                
-                                checkout.tm_mday = ngayRa;
-                                checkout.tm_mon = thangRa - 1;
-                                checkout.tm_year = namRa - 1900;
-                                checkout.tm_hour = gioRa;
-                                
-                                room->setCheckIn(checkin);
-                                room->setCheckOut(checkout);
-                                
-                                cout << "\nThong tin tinh tien phong " << roomID << ":\n";
-                                cout << "Loai phong: " << room->getRoomType() << endl;
-                                cout << "Gia phong/gio: " << room->getRoomPrice() << " VND" << endl;
-                                cout << "Thoi gian thue: " << room->thoigianthue() << " gio" << endl;
-                                cout << "Tong tien: " << room->tienthuephong() << " VND" << endl;
-                            }
-                            break;
-                        }
-                        case 0:
-                            break;
-                        default:
-                            cout << "Lua chon khong hop le!\n";
-                            break;
-                    }
-
-                    if (phongChoice != 0) {
-                        do {
-                            cout << "Ban co muon tiep tuc quan ly phong? (y/n): ";
-                            cin >> tieptuc;
-                            cin.ignore();
-                            if (tieptuc == 'n' || tieptuc == 'N') {
-                                break;
-                            } else if (tieptuc == 'y' || tieptuc == 'Y') {
-                                break;
-                            } else {
-                                cout << "Lua chon khong hop le!\n";
-                            }
-                        } while (true);
-                        if (tieptuc == 'n' || tieptuc == 'N') break;
-                    }
-                } while (phongChoice != 0);
+            case 1:
+                PhongMenu(listphong);
                 break;
-            }
             case 2:
                 KhachhangMenu();
                 break;
             case 0:
-                cout << "Thoat menu user.\n";
+                cout << "Dang xuat thanh cong!\n";
                 return;
             default:
-                cout << "Lua chon khong hop le!\n";
+                cout << "Lua chon khong hop le! Vui long chon lai.\n";
                 break;
         }
     } while (true);
@@ -326,7 +211,8 @@ void PhongMenu(LinkedlistPhong& listphong) {
     string roomID;
     char tieptuc;
     do {
-        cout << "\n========== QUAN LY PHONG ==========\n";
+        
+        cout << "\n===================== QUAN LY PHONG =====================\n";
         cout << "1. Hien thi danh sach phong\n";
         cout << "2. Dat phong\n";
         cout << "3. Tra phong\n";
@@ -374,6 +260,27 @@ void PhongMenu(LinkedlistPhong& listphong) {
                         break;
                     }
 
+
+                    ifstream checkFile("khachhanghientai.txt");
+                    string line;
+                    bool hasCustomer = false;
+                    while (getline(checkFile, line)) {
+                        stringstream ss(line);
+                        string fileRoomID;
+                        getline(ss, fileRoomID, ';');
+                        if (fileRoomID == roomID) {
+                            hasCustomer = true;
+                            break;
+                        }
+                    }
+                    checkFile.close();
+
+                    if (hasCustomer) {
+                        cout << "\nPhong " << roomID << " dang co thong tin khach hang!\n";
+                        cout << "Khong the xoa phong co thong tin khach hang.\n";
+                        break;
+                    }
+
                     cout << "\nThong tin phong can xoa:\n";
                     cout << string(85, '=') << endl;
                     cout << left 
@@ -387,6 +294,7 @@ void PhongMenu(LinkedlistPhong& listphong) {
                     room->displayRoomInfo();
                     cout << string(85, '=') << endl;
                     
+                    cout << "Luu y: Thong tin lich su khach hang va hoa don cua phong van duoc giu lai.\n";
                     char xacnhan;
                     do {
                         cout << "Ban co chac chan muon xoa phong nay? (y/n): ";
@@ -401,6 +309,7 @@ void PhongMenu(LinkedlistPhong& listphong) {
                     if (xacnhan == 'y') {
                         if (listphong.deleteRoom(roomID)) {
                             cout << "\nDa xoa phong " << roomID << " thanh cong!\n";
+                            cout << "Thong tin lich su khach hang va hoa don van duoc luu tru.\n";
                         } else {
                             cout << "Xoa phong that bai!\n";
                         }
@@ -498,12 +407,14 @@ void LetanMenu(LinkedListLetan& listletan) {
     int choice;
     char tieptuc;
     do {
-        cout << "\n========== QUAN LY LE TAN ==========\n";
+       
+        cout << "\n===================== QUAN LY LE TAN =====================\n";
         cout << "1. Hien thi danh sach cac thong tin le tan\n";
         cout << "2. Quan ly ngay lam viec le tan\n";
         cout << "3. Sua thong tin le tan\n";
         cout << "4. Xoa le tan\n";
         cout << "5. Them le tan\n";
+        cout << "6. Tim kiem le tan\n";
         cout << "0. Quay lai\n";
         cout << "Hay nhap lua chon: ";
         cin >> choice;
@@ -519,7 +430,7 @@ void LetanMenu(LinkedListLetan& listletan) {
             case 2: {
                 string cccd;
                 cout << "\nDanh sach le tan va ngay lam viec:\n";
-                cout << "=============================================================================\n";
+                cout << "===========================================================================================\n";
                 NodeLT* current = listletan.getHead();
                 while (current != NULL) {
                     cout << "Le tan: " << setw(30) << left << current->data.getName() 
@@ -527,7 +438,7 @@ void LetanMenu(LinkedListLetan& listletan) {
                          << " | Ngay lam: " << current->data.getWorkdayLT() << endl;
                     current = current->next;
                 }
-                cout << "=============================================================================\n";     
+                cout << "===========================================================================================\n";     
                 
                 cout << "Nhap CCCD cua le tan can cap nhat ngay lam viec: ";
                 getline(cin, cccd);
@@ -535,37 +446,21 @@ void LetanMenu(LinkedListLetan& listletan) {
                 
                 if (letan != NULL) {
                     string newWorkday;
-                    bool isValidWorkday;
-                    
                     cout << "Ngay lam viec hien tai: " << letan->data.getWorkdayLT() << endl;
                     
                     do {
-                        isValidWorkday = true;
                         cout << "Nhap ngay lam viec moi: ";
                         getline(cin, newWorkday);
-    
+
                         if (newWorkday == letan->data.getWorkdayLT()) {
                             cout << "Ban dang nhap trung voi ngay lam viec hien tai!\n";
-                            isValidWorkday = false;
                             continue;
                         }
-                        current = listletan.getHead();
-                        while (current != NULL) {
-                            if (current != letan && current->data.getWorkdayLT() == newWorkday) {
-                                cout << "Ngay lam viec da duoc phan cong cho le tan:\n";
-                                cout << "Ten: " << current->data.getName() 
-                                     << " (CCCD: " << current->data.getCccd() << ")\n";
-                                isValidWorkday = false;
-                                break;
-                            }
-                            current = current->next;
-                        }
-                        
-                        if (isValidWorkday) {
-                            letan->data.setWorkdayLT(newWorkday);
+
+                        if (listletan.updateWorkday(cccd, newWorkday)) {
                             cout << "Cap nhat ngay lam viec thanh cong!\n";
                             cout << "\nDanh sach sau khi cap nhat:\n";
-                            cout << "=============================================================================\n";
+                            cout << "===========================================================================================\n";
                             current = listletan.getHead();
                             while (current != NULL) {
                                 cout << "Le tan: " << setw(30) << left << current->data.getName() 
@@ -573,12 +468,12 @@ void LetanMenu(LinkedListLetan& listletan) {
                                      << " | Ngay lam: " << current->data.getWorkdayLT() << endl;
                                 current = current->next;
                             }
-                            cout << "=============================================================================\n";
+                            cout << "===========================================================================================\n";
+                            break;
                         } else {
                             cout << "Vui long nhap ngay lam viec khac!\n";
                         }
-                        
-                    } while (!isValidWorkday);
+                    } while (true);
                 }
                 break;
             }
@@ -643,6 +538,48 @@ void LetanMenu(LinkedListLetan& listletan) {
                 cout << "Them le tan thanh cong!\n";
                 break;
             }
+            case 6: {
+                string searchTerm;
+                cout << "\n========== TIM KIEM LE TAN ==========\n";
+                cout << "1. Tim theo CCCD\n";
+                cout << "2. Tim theo ten\n";
+                cout << "3. Tim theo ngay lam viec\n";
+                cout << "Nhap lua chon: ";
+                int searchChoice;
+                cin >> searchChoice;
+                cin.ignore();
+
+                switch(searchChoice) {
+                    case 1: {
+                        cout << "Nhap CCCD can tim: ";
+                        getline(cin, searchTerm);
+                        NodeLT* result = listletan.findLetan(searchTerm);
+                        if (result != nullptr) {
+                            cout << "\nThong tin le tan:\n";
+                            cout << string(85, '=') << endl;
+                            result->data.displayInfoLT();
+                            cout << string(85, '=') << endl;
+                        }
+                        break;
+                    }
+                    case 2: {
+                        cout << "Nhap ten le tan can tim: ";
+                        getline(cin, searchTerm);
+                        listletan.findLetanByName(searchTerm);
+                        break;
+                    }
+                    case 3: {
+                        cout << "Nhap ngay lam viec can tim: ";
+                        getline(cin, searchTerm);
+                        listletan.findLetanByWorkday(searchTerm);
+                        break;
+                    }
+                    default:
+                        cout << "Lua chon khong hop le!\n";
+                        break;
+                }
+                break;
+            }
             case 0:
                 return;
             default:
@@ -669,28 +606,226 @@ void KhachhangMenu() {
     char tieptuc;
     do {
         cout << "\n========== QUAN LY THONG TIN KHACH HANG ==========\n";
-        cout << "1. Cap nhat luu thong tin khach hang\n";
-        cout << "2. Xem danh sach thong tin khach hang\n";
-        cout << "3. Tim kiem thong tin khach hang\n";
+        cout << "1. Xem danh sach khach hang dang dat phong\n";
+        cout << "2. Tim kiem khach hang\n";
+        cout << "3. Cap nhat thong tin khach hang\n";
+        cout << "4. Thong ke luong khach hang\n";
         cout << "0. Quay lai\n";
-        cout << "Hay nhap lua chon: ";
-        cin >> choice;
-        cin.ignore();
+        
+        bool validChoice = false;
+        do {
+            cout << "Hay nhap lua chon: ";
+            cin >> choice;
+            cin.ignore();
+
+            if (cin.fail() || choice < 0 || choice > 4) {
+                cin.clear(); // Clear the error flag
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore invalid input
+                cout << "Lua chon khong hop le! Vui long chon 0, 1, 2, 3, hoac 4.\n";
+            } else {
+                validChoice = true;
+            }
+        } while (!validChoice);
+
         switch (choice) {
-            case 1:
-                // Cập nhật thông tin khách hàng
+            case 1: {
+                cout << "\n========== DANH SACH KHACH HANG DANG DAT PHONG ==========\n\n";
+                ifstream file("khachhanghientai.txt");
+                if (!file.is_open()) {
+                    cout << "Khong co khach hang nao dang dat phong!\n";
+                } else {
+                    listkhachhang.readKhachHangFile("khachhanghientai.txt");
+                    if (listkhachhang.getHead() == NULL) {
+                        cout << "Khong co khach hang nao dang dat phong!\n";
+                    } else {
+                        listkhachhang.displayKhachhang();
+                    }
+                    file.close();
+                }
                 break;
-            case 2:
-                // Xem danh sách khách hàng
+            }
+            case 2: {
+                int searchChoice;
+                do {
+                    cout << "\n========== TIM KIEM KHACH HANG ==========\n";
+                    cout << "1. Tim theo CCCD\n";
+                    cout << "2. Tim theo ten\n";
+                    cout << "0. Quay lai\n";
+                    cout << "Nhap lua chon: ";
+                    cin >> searchChoice;
+                    cin.ignore();
+
+                    switch(searchChoice) {
+                        case 0:
+                            break;
+                        case 1: {
+                            string cccd;
+                            cout << "Nhap CCCD can tim: ";
+                            getline(cin, cccd);
+                            NodeKH* result = listkhachhang.findKhachhang(cccd);
+                            if (result != NULL) {
+                                cout << "\nThong tin khach hang:\n";
+                                cout << string(120, '=') << endl;
+                                cout << left << setw(10) << "RoomID" << "| "
+                                     << left << setw(25) << "Check-in Time" << "| "
+                                     << left << setw(20) << "Ho va ten" << "| " 
+                                     << left << setw(15) << "CCCD" << "| "
+                                     << left << setw(15) << "So dien thoai" << "| "
+                                     << left << setw(20) << "Noi song" << endl;
+                                cout << string(120, '-') << endl;
+
+                                // Đọc thông tin phòng và thời gian từ file
+                                ifstream file("khachhanghientai.txt");
+                                string line;
+                                while (getline(file, line)) {
+                                    stringstream ss(line);
+                                    string roomID, checkInTime, name, cccd;
+                                    getline(ss, roomID, ';');
+                                    getline(ss, checkInTime, ';');
+                                    getline(ss, name, ';');
+                                    getline(ss, cccd, ';');
+                                    
+                                    if (cccd == result->data.getCccd()) {
+                                        cout << left << setw(10) << roomID << "| "
+                                             << left << setw(25) << checkInTime << "| "
+                                             << left << setw(20) << result->data.getName() << "| "
+                                             << left << setw(15) << result->data.getCccd() << "| "
+                                             << left << setw(15) << result->data.getSdt() << "| "
+                                             << left << setw(20) << result->data.getQuequan() << endl;
+                                        break;
+                                    }
+                                }
+                                file.close();
+                                cout << string(120, '=') << endl;
+                            } else {
+                                cout << "Khong tim thay khach hang co CCCD: " << cccd << endl;
+                            }
+                            break;
+                        }
+                        case 2: {
+                            string name;
+                            cout << "Nhap ten can tim: ";
+                            getline(cin, name);
+                            listkhachhang.findKhachHangByName(name);
+                            break;
+                        }
+                        default:
+                            cout << "Lua chon khong hop le! Vui long chon 0, 1 hoac 2.\n";
+                            break;
+                    }
+
+                    if (searchChoice != 0) {
+                        do {
+                            cout << "\nBan co muon tim kiem tiep khong? (y/n): ";
+                            cin >> tieptuc;
+                            cin.ignore();
+                            tieptuc = tolower(tieptuc);
+                            
+                            if (tieptuc == 'y' || tieptuc == 'n') {
+                                break;
+                            } else {
+                                cout << "Vui long chi nhap 'y' hoac 'n'!\n";
+                            }
+                        } while (true);
+
+                        if (tieptuc == 'n') {
+                            break;
+                        }
+                    }
+                } while (searchChoice != 0 && tieptuc == 'y');
                 break;
-            case 3:
-                // Tim kiem thong tin khach hang
+            }
+            case 3: {
+                string cccd;
+                cout << "Nhap CCCD cua khach hang can cap nhat: ";
+                getline(cin, cccd);
+                listkhachhang.readKhachHangFile("khachhanghientai.txt");
+                listkhachhang.updateKhachHang(cccd);
                 break;
+            }
+            case 4: {
+                // Thống kê khách hàng đang đặt phòng
+                cout << "\n========== THONG KE KHACH HANG DANG DAT PHONG ==========\n";
+                ifstream currentFile("khachhanghientai.txt");
+                if (!currentFile.is_open()) {
+                    cout << "Khong co khach hang nao dang dat phong!\n";
+                } else {
+                    listkhachhang.readKhachHangFile("khachhanghientai.txt");
+                    int currentCount = listkhachhang.countKhachHangInFile("khachhanghientai.txt");
+                    cout << "So luong khach hang dang dat phong: " << currentCount << endl;
+                    if (currentCount > 0) {
+                        listkhachhang.displayKhachhang();
+                    }
+                    currentFile.close();
+                }
+
+                // Thống kê khách hàng đã đặt phòng theo tháng
+                cout << "\n========== THONG KE KHACH HANG THEO THANG ==========\n";
+                int month, year;
+                cout << "Nhap thang (1-12): ";
+                cin >> month;
+                cout << "Nhap nam: ";
+                cin >> year;
+                cin.ignore();
+
+                ifstream historyFile("lichsukhachhang.txt");
+                ofstream outFile("thongkekhachhang.txt", ios::app);
+                if (!historyFile.is_open()) {
+                    cout << "Khong co lich su khach hang!\n";
+                } else {
+                    string line;
+                    int count = 0;
+                    while (getline(historyFile, line)) {
+                        stringstream ss(line);
+                        string roomID, checkInTime, name, cccd, phone, quequan;
+                        getline(ss, roomID, ';');
+                        getline(ss, checkInTime, ';');
+                        getline(ss, name, ';');
+                        getline(ss, cccd, ';');
+                        getline(ss, phone, ';');
+                        getline(ss, quequan, ';');
+
+                        // Giả sử định dạng checkInTime là "dd/mm/yyyy hh:mm"
+                        int day, fileMonth, fileYear;
+                        sscanf(checkInTime.c_str(), "%d/%d/%d", &day, &fileMonth, &fileYear);
+
+                        // Kiểm tra nếu tháng và năm trùng với tháng và năm nhập vào
+                        if (fileYear == year && fileMonth == month) {
+                            outFile << line << endl;
+                            count++;
+                        }
+                    }
+
+                    cout << "So luong khach hang da dat phong trong thang " << month << "/" << year << ": " << count << endl << endl;
+                    outFile << endl <<"Tong so khach hang trong thang " << month << "/" << year << ": " << count << endl;
+                    historyFile.close();
+                    outFile.close();
+                }
+                break;
+            }
             case 0:
                 return;
             default:
                 cout << "Lua chon khong hop le! Vui long chon lai.\n";
                 break;
+        }
+
+        bool validInput = false;
+        do {
+            cout << "\nBan co muon tiep tuc khong? (y/n): ";
+            cin >> tieptuc;
+            cin.ignore();
+            tieptuc = tolower(tieptuc);
+            
+            if (tieptuc == 'y' || tieptuc == 'n') {
+                validInput = true;
+            } else {
+                cout << "Vui long chi nhap 'y' hoac 'n'!\n";
+            }
+        } while (!validInput);
+        
+        if (tieptuc == 'n') {
+            return;
         }
     } while (true);
 }
